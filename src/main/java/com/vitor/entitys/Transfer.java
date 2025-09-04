@@ -2,43 +2,71 @@ package com.vitor.entitys;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import com.vitor.entitys.dto.TransferDTO;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Table(name = "transfers")
 @Entity
-@NoArgsConstructor
+@Table(name = "transfers")
 public class Transfer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank()
+    @Pattern(regexp = "\\d{10}")
+    @Column(name = "source_account", nullable = false, length = 10)
     private String sourceAccount;
-    private String destinationAccount;
-    private BigDecimal amount;
-    @Setter
-    private BigDecimal calculatedFee;
-    private LocalDate createdAt;
-    private LocalDate schedulingDate;
 
-    public Transfer(TransferDTO dto) {
-        this.sourceAccount = dto.getSourceAccount();
-        this.destinationAccount = dto.getDestinationAccount();
-        this.calculatedFee = BigDecimal.ZERO;
-        this.amount = dto.getAmount();
-        this.createdAt = LocalDate.now();
-        this.schedulingDate = dto.getSchedulingDate();
+    @NotBlank()
+    @Pattern(regexp = "\\d{10}")
+    @Column(name = "destination_account", nullable = false, length = 10)
+    private String destinationAccount;
+
+    @NotNull()
+    @DecimalMin(value = "0.01")
+    @Column(name = "amount", nullable = false, precision = 19, scale = 2)
+    private BigDecimal amount;
+
+    @NotNull()
+    @DecimalMin(value = "0.00")
+    @Column(name = "fee", nullable = false, precision = 19, scale = 2)
+    private BigDecimal fee;
+
+    @NotNull()
+    @Future()
+    @Column(name = "created_at", nullable = false)
+    private LocalDate transferDate;
+
+    @Column(name = "scheduling_date", nullable = false)
+    private LocalDateTime schedulingDate;
+
+    public Transfer() {
+        this.schedulingDate = LocalDateTime.now();
     }
+
+    public Transfer(String sourceAccount, String destinationAccount, BigDecimal amount, BigDecimal fee,
+            LocalDate transferDate) {
+        this();
+        this.sourceAccount = sourceAccount;
+        this.destinationAccount = destinationAccount;
+        this.amount = amount;
+        this.fee = fee;
+        this.transferDate = transferDate;
+    }
+
 }
