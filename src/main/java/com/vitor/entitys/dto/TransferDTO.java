@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -29,7 +29,7 @@ public class TransferDTO {
     private BigDecimal amount;
 
     @NotNull(message = "Data de transferência é obrigatória")
-    @Future(message = "Data de transferência deve ser futura")
+    @FutureOrPresent(message = "Data de transferência deve ser futura")
     private LocalDate transferDate;
 
 }

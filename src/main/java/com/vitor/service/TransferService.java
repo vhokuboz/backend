@@ -10,6 +10,7 @@ import com.vitor.dto.TransferResponseDTO;
 import com.vitor.entitys.Transfer;
 import com.vitor.entitys.dto.TransferDTO;
 import com.vitor.repository.TransferRepository;
+import com.vitor.service.fee.FeeCalculationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,16 +19,22 @@ import lombok.RequiredArgsConstructor;
 public class TransferService {
 
     private final TransferRepository repository;
+    private final FeeCalculationService feeCalculationService;
 
     public TransferResponseDTO scheduleTransfer(TransferDTO dto) {
+        BigDecimal fee = feeCalculationService.calculateFee(
+            dto.getAmount(), 
+            dto.getTransferDate()
+        );
+
         Transfer transfer = new Transfer(
                 dto.getSourceAccount(),
                 dto.getDestinationAccount(),
                 dto.getAmount(),
-                BigDecimal.ZERO,
+                fee,
                 dto.getTransferDate());
-        Transfer save = repository.save(transfer);;
-        return new TransferResponseDTO(save);
+        Transfer saved = repository.save(transfer);;
+        return new TransferResponseDTO(saved);
     }
 
     public List<TransferResponseDTO> listAll() {

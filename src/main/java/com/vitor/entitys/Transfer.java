@@ -11,7 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -48,7 +48,7 @@ public class Transfer {
     private BigDecimal fee;
 
     @NotNull()
-    @Future()
+    @FutureOrPresent()
     @Column(name = "created_at", nullable = false)
     private LocalDate transferDate;
 
