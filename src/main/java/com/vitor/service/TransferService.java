@@ -1,9 +1,10 @@
 package com.vitor.service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.vitor.dto.TransferResponseDTO;
@@ -23,9 +24,8 @@ public class TransferService {
 
     public TransferResponseDTO scheduleTransfer(TransferDTO dto) {
         BigDecimal fee = feeCalculationService.calculateFee(
-            dto.getAmount(), 
-            dto.getTransferDate()
-        );
+                dto.getAmount(),
+                dto.getTransferDate());
 
         Transfer transfer = new Transfer(
                 dto.getSourceAccount(),
@@ -33,13 +33,13 @@ public class TransferService {
                 dto.getAmount(),
                 fee,
                 dto.getTransferDate());
-        Transfer saved = repository.save(transfer);;
+        Transfer saved = repository.save(transfer);
         return new TransferResponseDTO(saved);
     }
 
-    public List<TransferResponseDTO> listAll() {
-        return repository.findAll()
-                .stream().map(TransferResponseDTO::new)
-                .collect(Collectors.toList());
+    public Page<TransferResponseDTO> listAllPaged(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "schedulingDate"));
+        return repository.findAll(pageRequest)
+                .map(TransferResponseDTO::new);
     }
 }
